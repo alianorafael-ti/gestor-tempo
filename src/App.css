@@ -1,0 +1,98 @@
+:root {
+  --primary: #4a90e2;
+  --bg: #f8faff;
+}
+
+body {
+  background-color: var(--bg);
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+.app-container {
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 20px;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+h1 { text-align: center; color: var(--primary); margin-bottom: 25px; }
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+
+.campo-grupo { display: flex; flex-direction: column; gap: 5px; }
+
+.label-celular { font-size: 13px; font-weight: bold; color: #666; }
+
+input {
+  padding: 15px;
+  border: 2px solid #eee;
+  border-radius: 10px;
+  font-size: 16px;
+  outline: none;
+}
+
+input:focus { border-color: var(--primary); }
+
+.btn-agendar {
+  padding: 18px;
+  background: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 16px;
+  margin-top: 10px;
+}
+
+.lista-tarefas { margin-top: 25px; }
+
+.card {
+  background: white;
+  padding: 15px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-left: 4px solid var(--primary);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+}
+
+.info-tarefa { display: flex; flex-direction: column; gap: 4px; }
+
+.data-display { font-size: 11px; color: #888; }
+
+.btn-remover {
+  background: #fff0f0;
+  color: #ff4d4d;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+.concluida { opacity: 0.5; border-left-color: #ccc; }
+
+.vazio { text-align: center; color: #aaa; margin-top: 40px; }
+
+.rodape { margin-top: auto; padding: 30px 0; text-align: center; }
+
+.btn-discreto {
+  background: white;
+  border: 1px solid #ddd;
+  padding: 12px 20px;
+  border-radius: 25px;
+  font-size: 13px;
+  color: #555;
+}
