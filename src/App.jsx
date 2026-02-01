@@ -2,21 +2,24 @@ import { useState, useEffect, useRef } from 'react'
 import './App.css'
 
 function App() {
+  // Referência única para o áudio
   const audioRef = useRef(new Audio('/alarm.wav'));
+  
   const [tarefas, setTarefas] = useState(() => {
     const salvas = localStorage.getItem('minhasTarefas');
     return salvas ? JSON.parse(salvas) : [];
   });
+  
   const [texto, setTexto] = useState('');
   const [data, setData] = useState('');
   const [hora, setHora] = useState('');
 
-  // Salvar no navegador automaticamente
+  // 1. Salvar no navegador automaticamente
   useEffect(() => {
     localStorage.setItem('minhasTarefas', JSON.stringify(tarefas));
   }, [tarefas]);
 
-  // FUNÇÃO PARA PARAR O SOM
+  // 2. Função para parar o alarme
   const pararAlarme = () => {
     if (audioRef.current) {
       audioRef.current.pause();
@@ -24,24 +27,36 @@ function App() {
     }
   };
 
-  // Lógica de Alerta (Checa a cada segundo)
+  // 3. Lógica de Alerta (Padronizada para evitar erros de formato de hora)
   useEffect(() => {
     const intervalo = setInterval(() => {
-      const agoraData = new Date().toISOString().split('T')[0];
-      const agoraHora = new Date().toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+      const agora = new Date();
+      
+      // Formato YYYY-MM-DD (ex: 2023-10-27)
+      const agoraData = agora.getFullYear() + '-' + 
+                        String(agora.getMonth() + 1).padStart(2, '0') + '-' + 
+                        String(agora.getDate()).padStart(2, '0');
+      
+      // Formato HH:MM (sempre 24h para bater com o input do navegador)
+      const agoraHora = String(agora.getHours()).padStart(2, '0') + ':' + 
+                        String(agora.getMinutes()).padStart(2, '0');
      
       tarefas.forEach(t => {
+        // Compara Data, Hora e se já não foi notificado
         if (t.data === agoraData && t.hora === agoraHora && !t.notificado) {
-          // 1. Tocar o Som
-          audioRef.current.play().catch(e => console.log("Erro ao tocar:", e));
+          
+          // Tocar o Som
           audioRef.current.loop = true;
+          audioRef.current.play().catch(e => console.log("Navegador bloqueou som inicial:", e));
 
-          // 2. Notificação de Sistema
+          // Notificação de Sistema (Plano A) ou Alert (Plano B)
           if (Notification.permission === "granted") {
-            new Notification("Lembrete: " + t.texto, {
-              body: `Horário: ${t.hora}`,
+            new Notification("⏰ HORA DE: " + t.texto, {
+              body: `Compromisso agendado para às ${t.hora}`,
               icon: "/vite.svg"
             });
+          } else {
+            alert("⏰ ALERTA: " + t.texto);
           }
           
           marcarComoNotificado(t.id);
@@ -54,6 +69,12 @@ function App() {
 
   const adicionarTarefa = () => {
     if (texto.trim() !== '' && data !== '' && hora !== '') {
+      // "Acorda" o áudio para o navegador permitir o som automático depois
+      audioRef.current.play().then(() => {
+        audioRef.current.pause();
+        audioRef.current.currentTime = 0;
+      }).catch(() => {});
+
       const novaTarefa = { 
         id: Date.now(), 
         texto, 
@@ -80,7 +101,7 @@ function App() {
 
   return (
     <div className="app-container">
-      <h1>Meu Gestor de Vida</h1>
+      <h1>Gestor de Tarefas</h1>
 
       <div className="formulario">
         <input 
@@ -91,44 +112,20 @@ function App() {
         />
         
         <div className="campo-grupo">
-          <label className="label-celular">Data:</label>
-          <input 
-            type="date" 
-            value={data} 
-            onChange={(e) => setData(e.target.value)}
-            className="input-data-mobile"
-          />
+          <label>Data:</label>
+          <input type="date" value={data} onChange={(e) => setData(e.target.value)} />
         </div>
 
         <div className="campo-grupo">
-          <label className="label-celular">Horário:</label>
-          <input 
-            type="time" 
-            value={hora} 
-            onChange={(e) => setHora(e.target.value)}
-            className="input-hora-mobile"
-          />
+          <label>Horário:</label>
+          <input type="time" value={hora} onChange={(e) => setHora(e.target.value)} />
         </div>
 
         <button className="btn-agendar" onClick={adicionarTarefa}>Agendar</button>
       </div>
 
-      {/* BOTÃO PARA PARAR O SOM QUANDO ESTIVER TOCANDO */}
       <div style={{ textAlign: 'center', margin: '20px 0' }}>
-        <button 
-          onClick={pararAlarme}
-          style={{ 
-            backgroundColor: '#ff4d4d', 
-            color: 'white', 
-            padding: '15px 30px', 
-            fontSize: '18px', 
-            fontWeight: 'bold', 
-            borderRadius: '10px',
-            cursor: 'pointer',
-            border: 'none',
-            boxShadow: '0 4px 10px rgba(0,0,0,0.2)'
-          }}
-        >
+        <button className="btn-parar" onClick={pararAlarme}>
           🛑 PARAR ALARME
         </button>
       </div>
@@ -144,7 +141,7 @@ function App() {
                   <span className="data-display">{t.data.split('-').reverse().join('/')}</span>
                   <span><strong>{t.hora}</strong> - {t.texto}</span>
                 </div>
-                <button className="btn-remover" onClick={() => removerTarefa(t.id)}>Remover</button>
+                <button className="btn-remover" onClick={() => removerTarefa(t.id)}>Excluir</button>
               </div>
             ))
         ) : (
@@ -154,13 +151,13 @@ function App() {
 
       <footer className="rodape">
         <button className="btn-discreto" onClick={() => {
-          Notification.requestPermission().then(p => alert("Notificações: " + p));
-          pararAlarme(); // Testa se o controle de áudio está funcionando
+          Notification.requestPermission();
+          alert("Som e Notificações ativados! Mantenha esta aba aberta.");
           audioRef.current.play().then(() => {
-             setTimeout(() => pararAlarme(), 2000); // Toca 2 segundos e para
+            setTimeout(() => pararAlarme(), 1000); // Toca 1 seg só para testar
           });
         }}>
-          🔔 Ativar Som e Notificações
+          🔔 Ativar Alarme e Avisos
         </button>
       </footer>
     </div>
