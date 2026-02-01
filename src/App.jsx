@@ -3,10 +3,12 @@ import './App.css'
 
 function App() {
   const audioRef = useRef(new Audio('/alarm.wav'));
+  
   const [tarefas, setTarefas] = useState(() => {
     const salvas = localStorage.getItem('minhasTarefas');
     return salvas ? JSON.parse(salvas) : [];
   });
+  
   const [texto, setTexto] = useState('');
   const [data, setData] = useState('');
   const [hora, setHora] = useState('');
@@ -15,16 +17,10 @@ function App() {
     localStorage.setItem('minhasTarefas', JSON.stringify(tarefas));
   }, [tarefas]);
 
-  // FUNÇÃO DE PARAR (Melhorada para Celular)
-  const pararAlarme = (e) => {
-    if (e) {
-      e.preventDefault();
-      e.stopPropagation();
-    }
+  const pararAlarme = () => {
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
-      audioRef.current.loop = false;
     }
   };
 
@@ -78,43 +74,32 @@ function App() {
   };
 
   return (
-    <div className="app-container">
-      <h1>Gestor de Tarefas</h1>
+    <div className="app-container" style={{ color: '#333' }}>
+      <h1>Gestor de Tempo</h1>
 
       <div className="formulario">
-        <input type="text" placeholder="O que precisa fazer?" value={texto} onChange={(e) => setTexto(e.target.value)} />
+        <input 
+          type="text" 
+          placeholder="O que precisa fazer?" 
+          value={texto} 
+          onChange={(e) => setTexto(e.target.value)} 
+          style={{ color: '#000' }}
+        />
         <div className="campo-grupo">
-          <label>Data:</label>
+          <label style={{ color: '#444' }}>Data:</label>
           <input type="date" value={data} onChange={(e) => setData(e.target.value)} />
         </div>
         <div className="campo-grupo">
-          <label>Horário:</label>
+          <label style={{ color: '#444' }}>Horário:</label>
           <input type="time" value={hora} onChange={(e) => setHora(e.target.value)} />
         </div>
         <button className="btn-agendar" onClick={adicionarTarefa}>Agendar</button>
       </div>
 
-      {/* BOTÃO DE PARAR CORRIGIDO (ESTILO FORÇADO E SUPORTE A TOQUE) */}
-      <div style={{ textAlign: 'center', margin: '25px 0' }}>
+      <div style={{ textAlign: 'center', margin: '20px 0' }}>
         <button 
           onClick={pararAlarme}
-          onPointerDown={pararAlarme}
-          style={{ 
-            backgroundColor: '#d32f2f', 
-            color: '#ffffff', 
-            padding: '18px 40px', 
-            fontSize: '18px', 
-            fontWeight: 'bold', 
-            borderRadius: '12px',
-            border: '2px solid #b71c1c',
-            cursor: 'pointer',
-            width: '90%',
-            maxWidth: '300px',
-            display: 'inline-block',
-            boxShadow: '0 4px 8px rgba(0,0,0,0.3)',
-            appearance: 'none',
-            WebkitAppearance: 'none'
-          }}
+          style={{ backgroundColor: '#ff4d4d', color: 'white', padding: '12px 25px', borderRadius: '8px', border: 'none', fontWeight: 'bold', cursor: 'pointer' }}
         >
           🛑 PARAR ALARME
         </button>
@@ -122,25 +107,31 @@ function App() {
 
       <div className="lista-tarefas">
         {tarefas.length > 0 ? (
-          tarefas.slice().sort((a, b) => (a.data + a.hora).localeCompare(b.data + b.hora)).map(t => (
-            <div key={t.id} className={`card ${t.notificado ? 'concluida' : ''}`}>
-              <div className="info-tarefa">
-                <span>{t.data.split('-').reverse().join('/')}</span>
-                <span><strong>{t.hora}</strong> - {t.texto}</span>
+          tarefas
+            .slice()
+            .sort((a, b) => (a.data + a.hora).localeCompare(b.data + b.hora))
+            .map(t => (
+              <div key={t.id} className={`card ${t.notificado ? 'concluida' : ''}`} style={{ backgroundColor: '#fff', border: '1px solid #ddd', padding: '10px', marginBottom: '10px', borderRadius: '8px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div className="info-tarefa" style={{ color: '#333' }}>
+                  <span style={{ fontWeight: 'bold', marginRight: '10px', color: '#000' }}>
+                    {t.data.split('-').reverse().join('/')}
+                  </span>
+                  <span style={{ color: '#000' }}>
+                    <strong>{t.hora}</strong> - {t.texto}
+                  </span>
+                </div>
+                <button className="btn-remover" onClick={() => removerTarefa(t.id)} style={{ color: 'red' }}>Excluir</button>
               </div>
-              <button className="btn-remover" onClick={() => removerTarefa(t.id)}>Excluir</button>
-            </div>
-          ))
+            ))
         ) : (
-          <p className="vazio">Nenhum compromisso.</p>
+          <p style={{ color: '#666', textAlign: 'center' }}>Nenhum compromisso agendado.</p>
         )}
       </div>
 
       <footer className="rodape">
         <button className="btn-discreto" onClick={() => {
           Notification.requestPermission();
-          alert("Ativado! Clique em OK.");
-          audioRef.current.play().then(() => setTimeout(() => pararAlarme(), 1000));
+          alert("Sistema pronto!");
         }}>
           🔔 Ativar Alarme e Avisos
         </button>
