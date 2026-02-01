@@ -1,16 +1,43 @@
-# React + Vite
+# ⏰ Gestor de Tempo
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Um aplicativo web moderno, leve e eficiente para gerenciamento de tarefas com sistema de alarme sonoro e notificações nativas. Desenvolvido para garantir que você nunca perca um compromisso importante.
 
-Currently, two official plugins are available:
+## ✨ Funcionalidades
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Agendamento Inteligente:** Defina tarefas com data e hora específicas.
+- **Alarme Sonoro:** Alerta de áudio (`alarm.wav`) que toca em loop até ser desativado.
+- **Notificações de Sistema:** Avisos visuais nativos (Desktop e Mobile).
+- **Persistência de Dados:** Suas tarefas ficam salvas no navegador (LocalStorage), mesmo após fechar a aba.
+- **Controle de Alarme:** Botão exclusivo para interromper o som do alarme.
+- **Design Adaptativo:** Interface otimizada para Firefox, Chrome e dispositivos móveis.
 
-## React Compiler
+## 🚀 Tecnologias Utilizadas
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+- [React.js](https://reactjs.org/) - Biblioteca principal.
+- [Vite](https://vitejs.dev/) - Build tool ultra-rápida.
+- [JavaScript/ES6+](https://developer.mozilla.org/pt-BR/docs/Web/JavaScript) - Lógica do sistema.
+- [CSS3](https://developer.mozilla.org/pt-BR/docs/Web/CSS) - Estilização e layout responsivo.
 
-## Expanding the ESLint configuration
+## 🛠️ Como usar
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+1. **Ativar Som e Notificações:** Ao abrir o app, clique no botão 🔔 no rodapé para dar permissão ao navegador.
+2. **Adicionar Tarefa:** Preencha a descrição, data e hora, e clique em "Agendar".
+3. **Alarme:** Quando o horário chegar, o som tocará e uma notificação aparecerá.
+4. **Parar Som:** Use o botão vermelho "🛑 PARAR ALARME" para silenciar o aviso.
+
+## 📦 Instalação e Execução
+
+Para rodar este projeto localmente:
+
+```bash
+# Clone o repositório
+git clone [https://github.com/alianorafael-ti/gestor-tempo.git
+
+# Entre na pasta
+cd gestor-tempo
+
+# Instale as dependências
+npm install
+
+# Inicie o servidor de desenvolvimento
+npm run dev
